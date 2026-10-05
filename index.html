@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A simple expense tracker: record, filter and understand your spending.">
+<title>Expense Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%2710%27 fill=%27%238B7CFF%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2720%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27sans-serif%27 font-weight=%27700%27%3E%E2%82%A6%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#07050F">
+<style>
+/* ===== css/style.css : "Ultraviolet" theme ===== */
+@property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
+:root{--bg:#F5F2FF;--solid:#fff;--surface:rgba(255,255,255,.7);--tint:rgba(109,91,255,.08);--ink:#150F2E;--muted:#6B6590;--line:rgba(90,60,200,.16);--a:#0FB5D2;--b:#6D5BFF;--c:#A855F7;--spark:#C6FF3D;--spark-ink:#18210A;--warn:#C27A00;--danger:#E0365B;--ok:#2F9E0F;
+--c-food:#E8A300;--c-transport:#0FB5D2;--c-shopping:#D946EF;--c-entertainment:#6D5BFF;--c-bills:#14B87A;--c-health:#E0365B;--c-education:#84B800;--c-other:#7A7699;
+--head:'Unbounded',system-ui,sans-serif;--body:'Manrope',system-ui,sans-serif;color-scheme:light}
+[data-theme=dark]{color-scheme:dark;--bg:#07050F;--solid:#0F0A22;--surface:rgba(22,16,46,.6);--tint:rgba(150,120,255,.1);--ink:#F3F0FF;--muted:#9A93C4;--line:rgba(160,130,255,.2);--a:#5EE6FF;--b:#8B7CFF;--c:#C084FC;--warn:#FFC24D;--danger:#FF6B8B;--ok:#C6FF3D;
+--c-food:#FFC24D;--c-transport:#5EE6FF;--c-shopping:#F08BFF;--c-entertainment:#8B7CFF;--c-bills:#4DF0B0;--c-health:#FF6B8B;--c-education:#C6FF3D;--c-other:#9A97B8}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:5rem}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.55 var(--body);font-variant-numeric:tabular-nums;min-height:100vh;overflow-x:hidden;position:relative}
+body::before{content:"";position:fixed;inset:-20%;z-index:-2;pointer-events:none;background:radial-gradient(40% 35% at 20% 20%,color-mix(in srgb,var(--b) 45%,transparent),transparent 70%),radial-gradient(35% 30% at 85% 15%,color-mix(in srgb,var(--a) 38%,transparent),transparent 70%),radial-gradient(45% 40% at 70% 90%,color-mix(in srgb,var(--c) 40%,transparent),transparent 70%);filter:blur(30px);opacity:.75;animation:drift 22s ease-in-out infinite alternate}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.09;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+@keyframes drift{to{transform:translate3d(4%,-5%,0) rotate(8deg) scale(1.12)}}
+@keyframes spin{to{--ang:360deg}}@keyframes turn{to{transform:rotate(360deg)}}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}}
+h1,h2,h3,.total{font-family:var(--head);margin:0;letter-spacing:-.04em;line-height:1.05}
+h2{font-size:1.15rem;font-weight:600;margin-bottom:1.1rem}
+p{margin:0}.wrap{max-width:1120px;margin-inline:auto;padding-inline:1rem}
+.eyebrow{display:flex;align-items:center;gap:.55rem;font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem}
+.eyebrow::before{content:"";width:.5rem;height:.5rem;border-radius:2px;rotate:45deg;background:var(--spark);box-shadow:0 0 12px var(--spark)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px}.skip:focus{left:1rem;top:1rem;z-index:30;background:var(--spark);color:var(--spark-ink);padding:.5rem .9rem;border-radius:99px;font-weight:700}
+:focus-visible{outline:2px solid var(--spark);outline-offset:2px}
+.site-header{position:sticky;top:.7rem;z-index:10;margin:.7rem auto 0;width:min(1088px,calc(100% - 1.4rem));border:1px solid var(--line);border-radius:99px;background:var(--surface);backdrop-filter:blur(18px) saturate(1.6);-webkit-backdrop-filter:blur(18px) saturate(1.6)}
+.bar{display:flex;align-items:center;gap:.5rem;min-height:3.6rem;padding-inline:.7rem 0!important}
+.site-header .wrap{padding-inline:.7rem}
+.brand{margin-right:auto;display:flex;align-items:center;gap:.6rem;font:600 .85rem var(--head);letter-spacing:-.03em;color:var(--ink);text-decoration:none;white-space:nowrap}
+.mark{width:2rem;height:2rem;flex:none}
+@media(max-width:479px){.hide-sm{display:none}.brand-text{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}
+.site-header nav{display:none}
+.site-header nav.open{display:flex;flex-direction:column;position:absolute;left:0;right:0;top:calc(100% + .5rem);padding:.6rem;background:var(--solid);border:1px solid var(--line);border-radius:1.4rem}
+@media(min-width:900px){.site-header nav,.site-header nav.open{display:flex;flex-direction:row;position:static;padding:0;background:none;border:0;gap:.1rem}.menu-btn{display:none!important}}
+.site-header nav a{color:var(--muted);text-decoration:none;font-size:.82rem;font-weight:600;padding:.5rem .9rem;border-radius:99px;transition:.15s}
+.site-header nav a:hover{color:var(--ink);background:var(--tint)}
+.hero{padding:1.5rem 0 0}
+.hero-card{display:grid;grid-template-columns:minmax(0,1fr);gap:1.5rem;align-items:center;border:1.5px solid transparent;border-radius:2rem;padding:clamp(1.4rem,4.5vw,3.2rem);position:relative;overflow:hidden;background:linear-gradient(var(--solid),var(--solid)) padding-box,conic-gradient(from var(--ang),var(--a),var(--b),var(--c),transparent 55%,var(--a)) border-box;animation:spin 7s linear infinite,rise .8s both}
+.hero-card::before,.panel::before{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),color-mix(in srgb,var(--b) 28%,transparent),transparent 70%);opacity:0;transition:opacity .3s}
+.hero-card:hover::before,.panel:hover::before{opacity:1}
+@media(min-width:800px){.hero-card{grid-template-columns:minmax(0,1fr) auto}}
+.hero h1{font:700 .7rem var(--body);letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.sub{color:var(--muted);font-size:.9rem;margin-top:.3rem}
+.total{font-size:clamp(2.1rem,9.5vw,5.6rem);font-weight:700;margin:.6rem 0 1.5rem;overflow-wrap:anywhere;background:linear-gradient(100deg,var(--a),var(--b) 45%,var(--c));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 28px color-mix(in srgb,var(--b) 55%,transparent))}
+.total output{font:inherit}
+.facts{display:flex;flex-wrap:wrap;gap:.6rem;margin:0}
+.facts>div{display:flex;align-items:baseline;gap:.6rem;background:var(--tint);border:1px solid var(--line);border-radius:99px;padding:.45rem 1.05rem}
+.facts dt{color:var(--muted);font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.facts dd{margin:0;font:600 .9rem var(--head)}
+.coins{width:min(200px,52%);height:auto;justify-self:center;filter:drop-shadow(0 0 24px color-mix(in srgb,var(--b) 60%,transparent))}
+.coins .r1{transform-origin:100px 100px;animation:turn 14s linear infinite}.coins .r2{transform-origin:100px 100px;animation:turn 9s linear infinite reverse}
+.content{padding-block:1.5rem 3.5rem;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:1.25rem}
+.content>*,.panels>.panel{grid-column:1/-1;min-width:0}.panels{display:contents}
+@media(min-width:800px){#budget{grid-column:span 7;order:1}.panels>.panel:last-child{grid-column:span 5;order:2}#breakdown{order:3;grid-column:1/-1}#expenses{order:4}}
+.panel{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:1.6rem;padding:1.5rem;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 20px 50px -30px rgba(40,10,120,.55);animation:rise .8s .15s both;transition:border-color .25s,transform .25s}
+.panel:hover{border-color:color-mix(in srgb,var(--b) 60%,var(--line))}
+.panel>*{position:relative}
+.section-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.section-head h2{margin-bottom:0}.section-head .note{margin-right:auto}
+.note,.empty-note{color:var(--muted);font-size:.9rem}
+.budget-form{display:flex;flex-wrap:wrap;gap:.6rem;align-items:end}.budget-form label{flex:1 1 11rem}
+.b-row{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin:1.2rem 0 .7rem;font-weight:600}
+.b-ok{color:var(--ok)}.b-warn{color:var(--warn)}.b-over{color:var(--danger)}
+progress.b-ok{--c:linear-gradient(90deg,var(--a),var(--spark))}progress.b-warn{--c:var(--warn)}progress.b-over{--c:var(--danger)}
+#breakdownBody{display:grid;gap:1.5rem;align-items:center}
+@media(min-width:700px){#breakdownBody{grid-template-columns:auto minmax(0,1fr);gap:2.5rem}}
+.donut{width:11rem;aspect-ratio:1;border-radius:50%;margin:0 auto;position:relative;display:grid;place-items:center;filter:drop-shadow(0 0 22px color-mix(in srgb,var(--b) 45%,transparent))}
+.donut::after{content:"";position:absolute;inset:21%;border-radius:50%;background:var(--solid)}
+.donut span{position:relative;z-index:1;font:600 .8rem var(--head);text-align:center;max-width:6rem;overflow-wrap:anywhere}
+.bars,.recent{list-style:none;margin:0;padding:0}.bars li+li{margin-top:1rem}
+.bk{display:grid;grid-template-columns:1fr auto 3rem;gap:.5rem;margin-bottom:.4rem;font-size:.92rem}
+.bk span:nth-child(2){font-weight:700}.pct{text-align:right;color:var(--muted)}
+progress{appearance:none;-webkit-appearance:none;display:block;width:100%;height:.6rem;border:0;border-radius:99px;overflow:hidden;background:var(--tint)}
+progress::-webkit-progress-bar{background:var(--tint)}progress::-webkit-progress-value{background:var(--c);border-radius:99px;box-shadow:0 0 14px var(--c)}progress::-moz-progress-bar{background:var(--c);border-radius:99px}
+.recent li{display:flex;justify-content:space-between;gap:1rem;padding:.85rem 0;border-top:1px dashed var(--line)}
+.recent li:first-child{border-top:0;padding-top:0}.recent time{display:block;color:var(--muted);font-size:.82rem}
+label{display:grid;gap:.35rem;font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+input,select{font:500 1rem var(--body);letter-spacing:0;text-transform:none;color:var(--ink);background:var(--tint);border:1px solid var(--line);border-radius:.9rem;padding:.65rem .9rem;min-height:2.9rem;width:100%}
+input:hover,select:hover{border-color:var(--b)}input:focus,select:focus{outline:2px solid var(--spark);outline-offset:0;border-color:transparent}
+select option{background:var(--solid);color:var(--ink)}
+input[aria-invalid=true],select[aria-invalid=true]{border-color:var(--danger);box-shadow:0 0 0 2px var(--danger)}
+.err{color:var(--danger);font-size:.85rem;font-weight:600;min-height:1.1em;text-transform:none;letter-spacing:0}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+.filters fieldset{display:flex;flex-wrap:wrap;gap:.7rem;align-items:end;margin-bottom:1.1rem}
+.filters label{flex:1 1 9rem}.filters .grow{flex:2 1 14rem}.filters .btn{flex:0 0 auto}
+.btn{font:700 .76rem var(--body);letter-spacing:.06em;text-transform:uppercase;min-height:2.9rem;padding:.6rem 1.35rem;border-radius:99px;border:1px solid var(--line);cursor:pointer;transition:transform .15s,box-shadow .25s,background .2s}
+.btn:hover{transform:translateY(-2px)}.btn:active{transform:scale(.96)}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.primary,.accent{background:var(--spark);color:var(--spark-ink);border-color:transparent;box-shadow:0 0 0 0 var(--spark),0 8px 26px -8px var(--spark)}
+.primary:hover,.accent:hover{box-shadow:0 0 0 4px color-mix(in srgb,var(--spark) 30%,transparent),0 10px 34px -6px var(--spark)}
+.quiet{background:var(--tint);color:var(--ink)}.quiet:hover{border-color:var(--b)}
+.danger{background:var(--danger);color:#fff;border-color:transparent}.danger-text{color:var(--danger)}
+.sm{min-height:2.2rem;padding:.3rem .9rem;font-size:.68rem}
+#exportBtn::after{content:" \2192"}
+.theme-btn,.menu-btn{width:2.7rem;padding:0;font-size:1rem;line-height:1;letter-spacing:0}.menu-btn{display:inline-flex;align-items:center;justify-content:center}
+.site-header .btn{margin-right:.3rem}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:1.3rem;background:var(--tint)}
+table.ledger{width:100%;border-collapse:collapse;font-size:.95rem}
+.ledger th,.ledger td{padding:.9rem 1.1rem;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+.ledger thead th{font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.ledger tbody th{font-weight:700}.ledger td.num{text-align:right;font:600 .9rem var(--head)}.ledger th.num{text-align:right}
+.ledger tbody tr{transition:background .2s}.ledger tbody tr:hover{background:linear-gradient(90deg,color-mix(in srgb,var(--b) 16%,transparent),transparent)}
+.ledger tfoot th,.ledger tfoot td{border:0;font-weight:700}
+.tag{display:inline-flex;align-items:center;gap:.5rem;padding:.2rem .7rem .2rem .55rem;border-radius:99px;font-size:.82rem;font-weight:600;background:color-mix(in srgb,var(--c) 14%,transparent);border:1px solid color-mix(in srgb,var(--c) 40%,transparent)}
+.tag::before{content:"";width:.5rem;height:.5rem;border-radius:50%;background:var(--c);box-shadow:0 0 9px var(--c)}
+.acts{white-space:nowrap;text-align:right}.acts .btn+.btn{margin-left:.35rem}.acts .ask{margin-right:.6rem;font-size:.85rem}
+.empty{text-align:center;padding:2.5rem 1rem;border:1px dashed var(--line);border-radius:1.3rem}.empty h3{font-size:1rem;margin-bottom:.5rem}.empty p{color:var(--muted);margin-bottom:1rem}
+@media(max-width:719px){
+.ledger thead{display:none}.ledger,.ledger tbody,.ledger tr,.ledger td,.ledger tbody th{display:block;width:100%}
+.ledger tbody tr{padding:.9rem 1rem;border-bottom:1px solid var(--line)}
+.ledger td,.ledger tbody th{border:0;padding:.22rem 0;display:flex;justify-content:space-between;align-items:center;gap:1rem;text-align:right}
+.ledger td[data-label]::before,.ledger tbody th::before{content:attr(data-label);color:var(--muted);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+.ledger .acts{justify-content:flex-end;flex-wrap:wrap;padding-top:.6rem}.ledger tfoot tr{display:flex;justify-content:space-between;gap:1rem;padding:.9rem 1rem}.ledger tfoot td:last-child{display:none}.ledger tfoot th,.ledger tfoot td{width:auto;padding:0}}
+.toast{position:fixed;left:50%;bottom:1.2rem;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:1rem;background:var(--ink);color:var(--bg);padding:.6rem .7rem .6rem 1.3rem;border-radius:99px;box-shadow:0 16px 50px -10px rgba(0,0,0,.7);max-width:92vw;font-weight:600}
+dialog{border:1px solid var(--line);border-radius:1.8rem;padding:1.7rem;background:var(--solid);color:var(--ink);width:min(26rem,calc(100vw - 2rem));box-shadow:0 0 80px -10px color-mix(in srgb,var(--b) 60%,transparent)}
+dialog::backdrop{background:rgba(5,3,14,.7);backdrop-filter:blur(8px)}
+dialog form{display:grid;gap:.9rem}dialog h2{margin:0 0 .3rem}
+.actions{display:flex;justify-content:flex-end;gap:.6rem;margin:0}
+.site-footer{border-top:1px solid var(--line);padding:1.5rem 0;color:var(--muted);font-size:.85rem}
+@media(prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toastText"></span><button class="btn quiet sm" type="button" id="toastUndo">Undo</button></div>
+<div id="loadError" role="alert" hidden style="background:#C4483F;color:#fff;padding:.8rem 1rem;text-align:center;font:600 .95rem system-ui,sans-serif"></div>
+<a class="skip" href="#expenses">Skip to expenses</a>
+
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="#top"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5EE6FF"/><stop offset=".55" stop-color="#8B7CFF"/><stop offset="1" stop-color="#C084FC"/></linearGradient></defs><rect width="32" height="32" rx="11" fill="url(#mg)"/><text x="16" y="22.5" text-anchor="middle" font-size="18" font-weight="700" fill="#fff" font-family="Unbounded,sans-serif">₦</text></svg><span class="brand-text">Expense Tracker</span></a>
+    <nav aria-label="Page sections" id="mainNav">
+      <a href="#overview">Overview</a>
+      <a href="#breakdown">Breakdown</a>
+      <a href="#expenses">Expenses</a>
+    </nav>
+    <button class="btn quiet theme-btn" type="button" id="themeBtn" aria-label="Switch to dark mode">🌙</button>
+    <button class="btn accent" type="button" data-action="add">Add<span class="hide-sm"> expense</span></button>
+    <button class="btn quiet menu-btn" type="button" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mainNav"><svg width="18" height="14" viewBox="0 0 18 14" aria-hidden="true"><path d="M1 1h16M1 7h16M1 13h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" id="overview" aria-labelledby="overview-title">
+    <div class="wrap"><div class="hero-card"><div class="hero-text">
+      <h1 id="overview-title">Total spent</h1>
+      <p class="sub" id="periodLabel">All time</p>
+      <p class="total"><output id="total">₦0</output></p>
+      <dl class="facts">
+        <div><dt>Expenses</dt><dd id="count">0</dd></div>
+        <div><dt>Top category</dt><dd id="topCategory">None yet</dd></div>
+      </dl>
+    </div>
+    <svg class="coins" viewBox="0 0 200 200" aria-hidden="true" focusable="false"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--a)"/><stop offset="1" stop-color="var(--c)"/></linearGradient></defs><circle cx="100" cy="100" r="90" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="2 8"/><g class="r1"><circle cx="100" cy="100" r="78" fill="none" stroke="url(#rg)" stroke-width="9" stroke-linecap="round" stroke-dasharray="300 190"/></g><g class="r2"><circle cx="100" cy="100" r="58" fill="none" stroke="var(--spark)" stroke-width="5" stroke-linecap="round" stroke-dasharray="110 255"/></g><text x="100" y="118" text-anchor="middle" font-size="46" font-weight="700" fill="var(--ink)" font-family="Unbounded,sans-serif">₦</text></svg>
+    </div></div>
+  </section>
+
+  <div class="wrap content">
+    <section class="panel budget" id="budget" aria-labelledby="budget-title">
+      <p class="eyebrow">Plan</p>
+      <h2 id="budget-title">Monthly budget</h2>
+      <form class="budget-form" id="budgetForm" autocomplete="off">
+        <label>Budget for this month (₦)
+          <input id="budgetInput" type="text" inputmode="decimal" placeholder="e.g. 150000">
+        </label>
+        <button class="btn primary" type="submit">Set budget</button>
+        <button class="btn quiet" type="button" id="budgetClear">Remove</button>
+      </form>
+      <p class="err" id="budgetErr" role="alert"></p>
+      <div id="budgetBody"></div>
+    </section>
+
+    <div class="panels">
+      <section class="panel" id="breakdown" aria-labelledby="breakdown-title">
+        <p class="eyebrow">Breakdown</p>
+        <h2 id="breakdown-title">Where your money went</h2>
+        <div id="breakdownBody"></div>
+      </section>
+      <section class="panel" aria-labelledby="recent-title">
+        <p class="eyebrow">Latest</p>
+        <h2 id="recent-title">Recent expenses</h2>
+        <ol class="recent" id="recent"></ol>
+      </section>
+    </div>
+
+    <section id="expenses" aria-labelledby="expenses-title">
+      <p class="eyebrow">Transactions</p>
+      <header class="section-head">
+        <h2 id="expenses-title">All expenses</h2>
+        <p class="note" id="resultNote"></p>
+        <button class="btn quiet" type="button" data-action="export" id="exportBtn">Export CSV</button>
+      </header>
+      <form class="filters" id="filters" autocomplete="off">
+        <fieldset>
+          <legend class="sr-only">Filter expenses</legend>
+          <label>Category
+            <select id="fCategory"><option value="all">All categories</option></select>
+          </label>
+          <label>Period
+            <select id="fPeriod">
+              <option value="all">All time</option>
+              <option value="month">This month</option>
+              <option value="custom">Custom range</option>
+            </select>
+          </label>
+          <label>Sort by
+            <select id="fSort">
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="high">Amount: high to low</option>
+              <option value="low">Amount: low to high</option>
+            </select>
+          </label>
+          <label class="range" hidden>From<input type="date" id="fFrom"></label>
+          <label class="range" hidden>To<input type="date" id="fTo"></label>
+          <label class="grow">Search<input type="search" id="fSearch" placeholder="Search descriptions"></label>
+          <button class="btn quiet" type="button" data-action="clear">Clear filters</button>
+        </fieldset>
+      </form>
+      <div id="list"></div>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap"><p>Your expenses are saved in this browser only.</p></div>
+</footer>
+
+<dialog id="formDialog" aria-labelledby="formTitle">
+  <form id="expenseForm" novalidate>
+    <h2 id="formTitle">Add expense</h2>
+    <label>Description
+      <input id="description" maxlength="60" placeholder="e.g. Lunch">
+      <span class="err" id="e-description" aria-live="polite"></span>
+    </label>
+    <label>Amount (₦)
+      <input id="amount" type="text" inputmode="decimal" autocomplete="off" placeholder="5000">
+      <span class="err" id="e-amount" aria-live="polite"></span>
+    </label>
+    <label>Category
+      <select id="category"></select>
+      <span class="err" id="e-category" aria-live="polite"></span>
+    </label>
+    <label>Date
+      <input id="date" type="date">
+      <span class="err" id="e-date" aria-live="polite"></span>
+    </label>
+    <p class="err" id="formStatus" role="alert"></p>
+    <footer class="actions">
+      <button class="btn quiet" type="button" id="cancelBtn">Cancel</button>
+      <button class="btn primary" type="submit">Save expense</button>
+    </footer>
+  </form>
+</dialog>
+
+<script>
+/* ===== js/storage.js : load and save to localStorage ===== */
+// Saves and loads the expense list in the browser (localStorage).
+const Store = (() => {
+  const KEY = 'expense-tracker:v2';
+
+  // Returns null when nothing has ever been saved (first visit).
+  const load = () => {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw === null) return null;
+      const data = JSON.parse(raw);
+      return Array.isArray(data) ? data : [];
+    } catch {
+      return []; // corrupted data: start clean instead of crashing
+    }
+  };
+
+  const save = list => {
+    try { localStorage.setItem(KEY, JSON.stringify(list)); } catch { /* storage full or blocked */ }
+  };
+
+  // Small settings: monthly budget (number or null) and theme ('light' | 'dark' | null).
+  const get = k => { try { return localStorage.getItem('expense-tracker:' + k); } catch { return null; } };
+  const set = (k, v) => { try { v === null ? localStorage.removeItem('expense-tracker:' + k) : localStorage.setItem('expense-tracker:' + k, v); } catch { /* blocked */ } };
+
+  return { load, save, get, set };
+})();
+
+</script>
+<script>
+/* ===== js/expenses.js : categories, sample data, filtering, sorting, totals, validation, CSV ===== */
+// Data rules: categories, sample data, filtering, totals, validation.
+const CATEGORIES = {
+  Food: 'var(--c-food)', Transportation: 'var(--c-transport)', Shopping: 'var(--c-shopping)', Entertainment: 'var(--c-entertainment)',
+  Bills: 'var(--c-bills)', Health: 'var(--c-health)', Education: 'var(--c-education)', Other: 'var(--c-other)'
+};
+
+const Expenses = (() => {
+  const pad = n => String(n).padStart(2, '0');
+  const toISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; // local date, "YYYY-MM-DD"
+  const today = () => toISO(new Date());
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+  // Sample expenses. Each gets a random date between 14 and 30 September 2026, so none reach October.
+  const sampleDate = () => `2026-09-${pad(14 + Math.floor(Math.random() * 17))}`;
+  const sample = () => [
+    ['Lunch', 4500, 'Food'], ['Uber to work', 3200, 'Transportation'], ['Groceries', 18500, 'Food'],
+    ['Netflix', 7000, 'Entertainment'], ['Electricity', 25000, 'Bills'], ['New shoes', 35000, 'Shopping'],
+    ['Airtime and data', 2000, 'Bills'], ['Suya night', 3500, 'Food']
+  ].map(([description, amount, category]) => ({ id: uid(), description, amount, category, date: sampleDate() }));
+
+  const filter = (list, { category, period, from, to, search }) => {
+    const q = search.trim().toLowerCase();
+    const month = today().slice(0, 7);
+    return list.filter(e =>
+      (category === 'all' || e.category === category) &&
+      (period !== 'month' || e.date.slice(0, 7) === month) &&
+      (period !== 'custom' || ((!from || e.date >= from) && (!to || e.date <= to))) &&
+      (!q || e.description.toLowerCase().includes(q)));
+  };
+
+  const sortNewest = list => [...list].sort((a, b) => b.date.localeCompare(a.date));
+  const sortBy = (list, mode) => {
+    const by = { newest: (a, b) => b.date.localeCompare(a.date), oldest: (a, b) => a.date.localeCompare(b.date),
+      high: (a, b) => b.amount - a.amount, low: (a, b) => a.amount - b.amount };
+    return [...list].sort(by[mode] || by.newest);
+  };
+  const total = list => Math.round(list.reduce((sum, e) => sum + e.amount, 0) * 100) / 100;
+
+  // [{category, amount}] biggest first. breakdown(list)[0] is the top category.
+  const breakdown = list => {
+    const sums = {};
+    list.forEach(e => { sums[e.category] = (sums[e.category] || 0) + e.amount; });
+    return Object.entries(sums).map(([category, amount]) => ({ category, amount })).sort((a, b) => b.amount - a.amount);
+  };
+
+  // CSV text. Cells starting with = + - @ are prefixed with ' so spreadsheets never run them as formulas.
+  const csvCell = v => {
+    let t = String(v);
+    if (/^[=+\-@\t\r]/.test(t)) t = "'" + t;
+    return '"' + t.replace(/"/g, '""') + '"';
+  };
+  const toCSV = list => ['Date,Description,Category,Amount (NGN)']
+    .concat(list.map(e => [e.date, e.description, e.category, e.amount].map(csvCell).join(','))).join('\r\n');
+
+  // Accepts "5000", "5,000" or "₦5,000.50". Returns NaN when it is not a number.
+  const parseAmount = v => {
+    const t = String(v).replace(/[₦,\s]/g, '');
+    return /^-?(\d+\.?\d*|\.\d+)$/.test(t) ? Number(t) : NaN;
+  };
+
+  const validate = ({ description, amount, category, date }) => {
+    const errors = {};
+    if (!description.trim()) errors.description = 'Enter a short description, like “Lunch”.';
+    else if (description.trim().length > 60) errors.description = 'Keep the description under 60 characters.';
+    const n = parseAmount(amount);
+    if (String(amount).trim() === '') errors.amount = 'Enter the amount you spent.';
+    else if (!Number.isFinite(n)) errors.amount = 'Enter the amount as a number, like 5000.';
+    else if (n <= 0) errors.amount = 'Amount must be more than ₦0.';
+    if (!(category in CATEGORIES)) errors.category = 'Choose a category.';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) errors.date = 'Choose a date.';
+    return errors;
+  };
+
+  return { sample, filter, sortNewest, sortBy, toCSV, parseAmount, total, breakdown, validate, uid, today };
+})();
+
+</script>
+<script>
+/* ===== js/ui.js : rendering only ===== */
+// Everything that draws on the page. No data rules live here.
+const UI = (() => {
+  const $ = id => document.getElementById(id);
+  // Escape text before putting it in innerHTML so stored data can never run as code.
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const money = n => '₦' + Number(n).toLocaleString('en-NG', { maximumFractionDigits: 2 });
+  const fmtDate = iso => {
+    const [y, m, d] = iso.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+  const color = c => CATEGORIES[c] || CATEGORIES.Other;
+
+  const countTo = (el, to) => { const from = Number(el.dataset.v || 0); el.dataset.v = to; if (matchMedia('(prefers-reduced-motion:reduce)').matches) { el.textContent = money(to); return; } const t0 = performance.now(); const step = t => { const k = Math.min(1, (t - t0) / 800); el.textContent = k < 1 ? money(Math.round(from + (to - from) * (1 - Math.pow(1 - k, 4)))) : money(to); if (k < 1) requestAnimationFrame(step); }; requestAnimationFrame(step); };
+  const fillCategories = () => {
+    const opts = Object.keys(CATEGORIES).map(c => `<option>${c}</option>`).join('');
+    $('category').innerHTML = '<option value="">Choose a category</option>' + opts;
+    $('fCategory').insertAdjacentHTML('beforeend', opts);
+  };
+
+  const periodText = f => {
+    if (f.period === 'month') return 'This month';
+    if (f.period !== 'custom') return 'All time';
+    if (f.from && f.to) return `${fmtDate(f.from)} to ${fmtDate(f.to)}`;
+    if (f.from) return `From ${fmtDate(f.from)}`;
+    if (f.to) return `Until ${fmtDate(f.to)}`;
+    return 'Custom range';
+  };
+
+  // Budget card: compares THIS MONTH's spending (all categories) with the budget.
+  const renderBudget = (spent, budget) => {
+    const box = $('budgetBody');
+    if (!budget) { box.innerHTML = '<p class="note">No budget set. Enter an amount above to track this month.</p>'; return; }
+    const pct = Math.min(100, Math.round(spent / budget * 100));
+    const over = spent > budget, left = budget - spent;
+    const state = over ? 'over' : pct >= 80 ? 'warn' : 'ok';
+    box.innerHTML = `<div class="b-row"><span>${money(spent)} of ${money(budget)} spent</span><strong class="b-${state}">${over ? money(-left) + ' over budget' : money(left) + ' left'}</strong></div>` +
+      `<progress class="b-bar b-${state}" max="100" value="${pct}" aria-label="Budget used">${pct}%</progress>`;
+  };
+
+  const renderSummary = (list, f) => {
+    const parts = [periodText(f)];
+    if (f.category !== 'all') parts.push(f.category);
+    if (f.search.trim()) parts.push(`“${f.search.trim()}”`);
+    $('periodLabel').textContent = parts.join(', ');
+    countTo($('total'), Expenses.total(list));
+    $('count').textContent = list.length;
+    const top = Expenses.breakdown(list)[0];
+    $('topCategory').textContent = top ? top.category : 'None yet';
+  };
+
+  const donut = (rows, total) => { let a = 0; const stops = rows.map(r => { const b = a; a += r.amount / total * 100; return `${color(r.category)} ${b}% ${a}%`; }).join(','); return `<div class="donut" style="background:conic-gradient(${stops})" role="img" aria-label="Spending by category"><span>${money(total)}</span></div>`; };
+  const renderBreakdown = list => {
+    const rows = Expenses.breakdown(list), total = Expenses.total(list);
+    $('breakdownBody').innerHTML = rows.length
+      ? donut(rows, total) + '<ul class="bars">' + rows.map(r => {
+          const pct = Math.round(r.amount / total * 100);
+          return `<li><p class="bk"><span>${esc(r.category)}</span><span>${money(r.amount)}</span><span class="pct">${pct}%</span></p>` +
+            `<progress max="100" value="${pct}" style="--c:${color(r.category)}" aria-label="${esc(r.category)}, ${pct}% of the total">${pct}%</progress></li>`;
+        }).join('') + '</ul>'
+      : '<p class="empty-note">Add an expense to see where your money goes.</p>';
+  };
+
+  const renderRecent = list => {
+    $('recent').innerHTML = list.length
+      ? list.map(e => `<li><span><strong>${esc(e.description)}</strong><time datetime="${esc(e.date)}">${esc(e.category)}, ${fmtDate(e.date)}</time></span><strong>${money(e.amount)}</strong></li>`).join('')
+      : '<li class="empty-note">Your latest expenses will show up here.</li>';
+  };
+
+  const renderList = (list, totalCount, confirmId) => {
+    const el = $('list');
+    $('resultNote').textContent = totalCount ? `Showing ${list.length} of ${totalCount}` : '';
+    if (!totalCount) {
+      el.innerHTML = '<div class="empty"><h3>No expenses yet</h3><p>Record your first expense and it will appear here.</p><button class="btn primary" type="button" data-action="add">Add expense</button></div>';
+      return;
+    }
+    if (!list.length) {
+      el.innerHTML = '<div class="empty"><h3>No expenses match these filters</h3><p>Try a different category or date range.</p><button class="btn quiet" type="button" data-action="clear">Clear filters</button></div>';
+      return;
+    }
+    el.innerHTML = '<div class="table-wrap"><table class="ledger"><caption class="sr-only">Expenses</caption>' +
+      '<thead><tr><th scope="col">Date</th><th scope="col">Description</th><th scope="col">Category</th><th scope="col" class="num">Amount</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead><tbody>' +
+      list.map(e =>
+        `<tr><td data-label="Date"><time datetime="${esc(e.date)}">${fmtDate(e.date)}</time></td>` +
+        `<th scope="row" data-label="Description">${esc(e.description)}</th>` +
+        `<td data-label="Category"><span class="tag" style="--c:${color(e.category)}">${esc(e.category)}</span></td>` +
+        `<td data-label="Amount" class="num">${money(e.amount)}</td>` +
+        (e.id === confirmId
+          ? `<td class="acts confirm"><span class="ask">Delete “${esc(e.description)}”? This can’t be undone.</span><button class="btn quiet sm" type="button" data-action="keep">Keep</button><button class="btn danger sm" type="button" data-action="confirm-delete" data-id="${esc(e.id)}">Yes, delete</button></td></tr>`
+          : `<td class="acts"><button class="btn quiet sm" type="button" data-action="edit" data-id="${esc(e.id)}" aria-label="Edit ${esc(e.description)}">Edit</button>` +
+            `<button class="btn quiet sm danger-text" type="button" data-action="delete" data-id="${esc(e.id)}" aria-label="Delete ${esc(e.description)}">Delete</button></td></tr>`)).join('') +
+      `</tbody><tfoot><tr><th scope="row" colspan="3">Total of listed expenses</th><td class="num">${money(Expenses.total(list))}</td><td></td></tr></tfoot></table></div>`;
+  };
+
+  const showErrors = errors => ['description', 'amount', 'category', 'date'].forEach(k => {
+    $('e-' + k).textContent = errors[k] || '';
+    $(k).setAttribute('aria-invalid', errors[k] ? 'true' : 'false');
+  });
+
+  return { renderBudget, fillCategories, renderSummary, renderBreakdown, renderRecent, renderList, showErrors, money, fmtDate };
+})();
+
+</script>
+<script>
+/* ===== js/app.js : state and event handling ===== */
+// Holds the app state and wires up events.
+const $ = id => document.getElementById(id);
+const state = {
+  expenses: [],
+  filters: { category: 'all', period: 'all', from: '', to: '', search: '', sort: 'newest' },
+  editingId: null,
+  confirmId: null,
+  lastDeleted: null,
+  budget: null
+};
+const formDlg = $('formDialog');
+
+function refresh() {
+  const visible = Expenses.sortBy(Expenses.filter(state.expenses, state.filters), state.filters.sort);
+  state.visible = visible;
+  $('exportBtn').disabled = !visible.length;
+  UI.renderSummary(visible, state.filters);
+  UI.renderBreakdown(visible);
+  UI.renderRecent(Expenses.sortNewest(state.expenses).slice(0, 3)); // latest overall, ignores filters
+  UI.renderList(visible, state.expenses.length, state.confirmId);
+  const month = Expenses.today().slice(0, 7);
+  UI.renderBudget(Expenses.total(state.expenses.filter(e => e.date.slice(0, 7) === month)), state.budget);
+}
+
+function commit() { Store.save(state.expenses); refresh(); }
+
+function readFilters() {
+  state.filters = {
+    category: $('fCategory').value, period: $('fPeriod').value,
+    from: $('fFrom').value, to: $('fTo').value, search: $('fSearch').value, sort: $('fSort').value
+  };
+  document.querySelectorAll('.range').forEach(l => { l.hidden = state.filters.period !== 'custom'; });
+  refresh();
+}
+
+function exportCSV() {
+  if (!state.visible.length) return;
+  const blob = new Blob(['\ufeff' + Expenses.toCSV(state.visible)], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `expenses-${Expenses.today()}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function clearFilters() { $('filters').reset(); readFilters(); }
+
+function openForm(expense) {
+  state.editingId = expense ? expense.id : null;
+  $('formTitle').textContent = expense ? 'Edit expense' : 'Add expense';
+  $('description').value = expense ? expense.description : '';
+  $('amount').value = expense ? String(expense.amount) : '';
+  $('category').value = expense ? expense.category : '';
+  $('date').value = expense ? expense.date : Expenses.today();
+  UI.showErrors({});
+  $('formStatus').textContent = '';
+  formDlg.showModal();
+  $('description').focus();
+}
+
+let toastTimer;
+function showToast(text, canUndo) {
+  $('toastText').textContent = text;
+  $('toastUndo').hidden = !canUndo;
+  $('toast').hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { $('toast').hidden = true; state.lastDeleted = null; }, 7000);
+}
+
+function deleteExpense(id) {
+  const index = state.expenses.findIndex(e => e.id === id);
+  if (index < 0) return;
+  const [removed] = state.expenses.splice(index, 1);
+  state.lastDeleted = { removed, index };
+  state.confirmId = null;
+  commit();
+  showToast(`Deleted “${removed.description}”.`, true);
+}
+
+$('toastUndo').addEventListener('click', () => {
+  if (!state.lastDeleted) return;
+  state.expenses.splice(state.lastDeleted.index, 0, state.lastDeleted.removed);
+  state.lastDeleted = null;
+  $('toast').hidden = true;
+  commit();
+});
+
+// One listener handles every button marked data-action (event delegation).
+document.addEventListener('click', ev => {
+  const btn = ev.target.closest('[data-action]');
+  if (!btn) return;
+  const { action, id } = btn.dataset;
+  const expense = state.expenses.find(e => e.id === id);
+  try {
+    if (action === 'add') openForm();
+    else if (action === 'clear') clearFilters();
+    else if (action === 'export') exportCSV();
+    else if (action === 'edit' && expense) openForm(expense);
+    else if (action === 'delete' && expense) { state.confirmId = id; refresh(); }
+    else if (action === 'keep') { state.confirmId = null; refresh(); }
+    else if (action === 'confirm-delete') deleteExpense(id);
+  } catch (err) {
+    console.error(err);
+    showToast('Something went wrong: ' + err.message, false);
+  }
+});
+
+$('filters').addEventListener('input', readFilters);
+$('filters').addEventListener('submit', ev => ev.preventDefault());
+$('cancelBtn').addEventListener('click', () => formDlg.close());
+
+$('expenseForm').addEventListener('submit', ev => {
+  ev.preventDefault();
+  const status = $('formStatus');
+  status.textContent = '';
+  try {
+    const data = { description: $('description').value, amount: $('amount').value, category: $('category').value, date: $('date').value };
+    const errors = Expenses.validate(data);
+    UI.showErrors(errors);
+    const firstBad = Object.keys(errors)[0];
+    if (firstBad) {
+      status.textContent = 'Please fix the highlighted fields.';
+      $(firstBad).focus();
+      return;
+    }
+    const clean = { description: data.description.trim(), amount: Math.round(Expenses.parseAmount(data.amount) * 100) / 100, category: data.category, date: data.date };
+    if (state.editingId) state.expenses = state.expenses.map(e => e.id === state.editingId ? { ...e, ...clean } : e);
+    else state.expenses.push({ id: Expenses.uid(), ...clean });
+    commit();
+    formDlg.close();
+  } catch (err) {
+    console.error(err);
+    status.textContent = 'Could not save: ' + err.message;
+  }
+});
+
+// Monthly budget
+$('budgetForm').addEventListener('submit', ev => {
+  ev.preventDefault();
+  const n = Expenses.parseAmount($('budgetInput').value);
+  if (!Number.isFinite(n) || n <= 0) { $('budgetErr').textContent = 'Enter a budget greater than ₦0, like 150000.'; return; }
+  $('budgetErr').textContent = '';
+  state.budget = Math.round(n * 100) / 100;
+  Store.set('budget', String(state.budget));
+  $('budgetInput').value = state.budget;
+  refresh();
+});
+$('budgetClear').addEventListener('click', () => {
+  state.budget = null; Store.set('budget', null);
+  $('budgetInput').value = ''; $('budgetErr').textContent = '';
+  refresh();
+});
+
+// Mobile menu (hamburger)
+const nav = $('mainNav'), menuBtn = $('menuBtn');
+const setMenu = open => { nav.classList.toggle('open', open); menuBtn.setAttribute('aria-expanded', open); menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu'); };
+menuBtn.addEventListener('click', () => setMenu(!nav.classList.contains('open')));
+nav.addEventListener('click', ev => { if (ev.target.closest('a')) setMenu(false); });
+
+// Light / dark theme (remembered; starts from the device setting)
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  $('themeBtn').textContent = theme === 'dark' ? '☀️' : '🌙';
+  $('themeBtn').setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#07050F' : '#F5F2FF';
+}
+$('themeBtn').addEventListener('click', () => {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  Store.set('theme', next); applyTheme(next);
+});
+applyTheme(Store.get('theme') || 'dark');
+const savedBudget = Number(Store.get('budget'));
+state.budget = savedBudget > 0 ? savedBudget : null;
+if (state.budget) $('budgetInput').value = state.budget;
+
+// Start up: load saved data, or seed sample data on the very first visit.
+const saved = Store.load();
+state.expenses = saved === null ? Expenses.sample() : saved;
+if (saved === null) Store.save(state.expenses);
+UI.fillCategories();
+refresh();
+
+</script>
+<script>
+// Cursor spotlight on cards
+document.addEventListener('pointermove', e => { const p = e.target.closest && e.target.closest('.panel,.hero-card'); if (!p) return; const r = p.getBoundingClientRect(); p.style.setProperty('--mx', (e.clientX - r.left) + 'px'); p.style.setProperty('--my', (e.clientY - r.top) + 'px'); });
+</script>
+<script>
+  // Safety net: explain clearly if the app cannot run, instead of failing silently.
+  (function () {
+    var msg = '';
+    if (typeof refresh !== 'function') msg = 'The app scripts did not load. Extract the whole zip first, then open index.html from inside the expense-tracker folder (keep the css and js folders next to it).';
+    else if (!window.HTMLDialogElement || !HTMLDialogElement.prototype.showModal) msg = 'This browser is too old for the add/edit dialog. Please open the app in an up-to-date Chrome, Edge, Firefox or Safari.';
+    if (msg) { var el = document.getElementById('loadError'); el.textContent = msg; el.hidden = false; }
+  })();
+</script>
+</body>
+</html>
